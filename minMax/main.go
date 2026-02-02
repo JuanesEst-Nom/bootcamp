@@ -36,6 +36,11 @@ func main() {
 	maxStr := getInput()
 	max, _ := strconv.ParseFloat(maxStr, 64)
 
+	if min > max {
+		fmt.Println("Error: min no puede ser mayor que max")
+		return
+	}
+
 	fmt.Print("Enter all values separated by space: ")
 	allValuesStr := getInput()
 	fields := strings.Fields(allValuesStr)
