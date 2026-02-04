@@ -2,49 +2,47 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
-	"io"
 	"os"
+	"strings"
 )
 
 func main() {
-	// Definición de flags
-	countLines := flag.Bool("l", false, "Cuenta líneas ")
-	countBytes := flag.Bool("b", false, "Cuenta bytes")
-	flag.Parse()
+	// Determinar el modo de conteo
+	countLines := false
+	if len(os.Args) > 1 && os.Args[1] == "-l" {
+		countLines = true
+	}
+	scanner := bufio.NewScanner(os.Stdin)
+	count := 0
 
-	// Llamada a la función count con los parámetros adecuados
-	fmt.Println(count(os.Stdin, *countLines, *countBytes))
-}
-
-// Función count que cuenta líneas, palabras o bytes según los flags
-func count(r io.Reader, lines bool, bytes bool) int {
-
-	scanner := bufio.NewScanner(r)
-
-	// organizar el escáner según los flags
-	if lines {
-
-		scanner.Split(bufio.ScanLines)
-	} else if bytes {
-
-		scanner.Split(bufio.ScanBytes)
+	if countLines {
+		fmt.Println("Contando líneas (escribe 'exit' para parar):")
 	} else {
-
-		scanner.Split(bufio.ScanWords)
+		fmt.Println("Contando palabras (escribe 'exit' para parar):")
 	}
 
-	//contador
-	counter := 0
+	// Capturar entrada línea por línea
 	for scanner.Scan() {
-		counter++
+		line := scanner.Text()
+
+		// Condición de salida
+		if strings.ToLower(strings.TrimSpace(line)) == "exit" {
+			break
+		}
+
+		if countLines {
+			count++
+		} else {
+			words := strings.Fields(line)
+			count += len(words)
+		}
 	}
 
-	return counter
+	// 3. Imprimir resultado final
+	if countLines {
+		fmt.Printf("Lineas totales: %d\n", count)
+	} else {
+		fmt.Printf("Palabras totales: %d\n", count)
+	}
 }
-
-// test
-// echo "uno dos tres" | go run main.go -b ---- 13
-// echo "uno dos tres" | go run main.go -l	---- 1
-// echo "uno dos tres" | go run main.go	---- 3

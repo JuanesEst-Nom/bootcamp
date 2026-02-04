@@ -1,3 +1,3 @@
-module wordCounter-project
+module word-counter
 
 go 1.24.4
