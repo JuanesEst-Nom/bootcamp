@@ -53,8 +53,14 @@ func main() {
 
 	var valueList []float64
 	for _, f := range fields {
-		val, _ := strconv.ParseFloat(f, 64)
+		val, err := strconv.ParseFloat(f, 64)
+		if err != nil {
+			fmt.Println("Error: invalid number")
+			return
+		}
+
 		valueList = append(valueList, val)
+
 	}
 	// Pass the values to the minmax function
 	filteredSlice := minmax(min, max, valueList...)
