@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	// Determinar el modo de conteo
+	// Determine the counting mode
 	countLines := false
 	if len(os.Args) > 1 && os.Args[1] == "-l" {
 		countLines = true
@@ -17,17 +17,16 @@ func main() {
 	count := 0
 
 	if countLines {
-		fmt.Println("Contando líneas (escribe 'exit' para parar):")
+		fmt.Println("Counting lines (type 'exit' to stop):")
 	} else {
-		fmt.Println("Contando palabras (escribe 'exit' para parar):")
+		fmt.Println("Counting words (type 'exit' to stop):")
 	}
 
-	// Capturar entrada línea por línea
+	// Capture input line by line
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		// Condición de salida
-		if strings.ToLower(strings.TrimSpace(line)) == "exit" {
+		if strings.EqualFold(strings.TrimSpace(line), "exit") {
 			break
 		}
 
@@ -39,10 +38,10 @@ func main() {
 		}
 	}
 
-	// 3. Imprimir resultado final
+	// Print the final result
 	if countLines {
-		fmt.Printf("Lineas totales: %d\n", count)
+		fmt.Printf("Total lines: %d\n", count)
 	} else {
-		fmt.Printf("Palabras totales: %d\n", count)
+		fmt.Printf("Total words: %d\n", count)
 	}
 }
