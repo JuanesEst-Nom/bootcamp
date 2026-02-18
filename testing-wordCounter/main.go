@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-// CountLogic recibe un io.Reader (puede ser os.Stdin o un String en un test)
 func CountLogic(input io.Reader, countLines bool) int {
 	scanner := bufio.NewScanner(input)
 	count := 0
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.ToLower(strings.TrimSpace(line)) == "exit" {
+
+		if strings.EqualFold(strings.TrimSpace(line), "exit") {
 			break
 		}
 
@@ -34,7 +34,17 @@ func main() {
 		countLines = true
 	}
 
-	// Pasamos os.Stdin a nuestra función lógica
+	if countLines {
+		fmt.Println("Counting lines (type 'exit' to stop):")
+	} else {
+		fmt.Println("Counting words (type 'exit' to stop):")
+	}
+
 	result := CountLogic(os.Stdin, countLines)
-	fmt.Println(result)
+
+	if countLines {
+		fmt.Printf("Total lines: %d\n", result)
+	} else {
+		fmt.Printf("Total words: %d\n", result)
+	}
 }

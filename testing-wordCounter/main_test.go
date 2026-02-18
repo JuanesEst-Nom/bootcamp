@@ -5,20 +5,20 @@ import (
 	"testing"
 )
 
-func TestWordCounter(t *testing.T) {
+func TestCountLogic(t *testing.T) {
 
-	// test word cases
+	// Test cases for word counting
 	wordTests := []struct {
 		name     string
 		input    string
 		expected int
 	}{
-		{"Single sentence", "Hola mundo\nexit", 2},
-		{"Multiple sentences", "Primera linea\nSegunda linea\nexit", 4},
+		{"Single sentence", "Hello world\nexit", 2},
+		{"Multiple sentences", "First line\nSecond line\nexit", 4},
 		{"Single word", "Golang\nexit", 1},
-		{"Composed word", "Esta es una tarea read-only\nexit", 5},
-		{"Multiple break lines", "Hola\n\n\nmundo\nexit", 2},
-		{"Case insensitive exit", "Hola\nEXIT", 1},
+		{"Composed word", "This is a read-only task\nexit", 5},
+		{"Multiple blank lines", "Hello\n\n\nworld\nexit", 2},
+		{"Case insensitive exit", "Hello\nEXIT", 1},
 	}
 
 	for _, tc := range wordTests {
@@ -26,23 +26,23 @@ func TestWordCounter(t *testing.T) {
 			reader := strings.NewReader(tc.input)
 			result := CountLogic(reader, false)
 			if result != tc.expected {
-				t.Errorf("Operation failed [%s]: Expected %d words, but got %d", tc.name, tc.expected, result)
+				t.Errorf("Test [%s] failed: Expected %d words, but got %d", tc.name, tc.expected, result)
 			}
 		})
 	}
 
-	// test by lines
+	// Test cases for line counting
 	lineTests := []struct {
 		name     string
 		input    string
 		expected int
 	}{
-		{"Single line", "Hola mundo\nexit", 1},
-		{"Multiple lines no breaks", "Linea1\nLinea2\nexit", 2},
-		{"Multiple lines with breaks", "Linea1\n\nLinea2\nexit", 3},
-		{"Exit at start", "exit\nHola", 0},
-		{"Exit in middle", "Hola\nexit\nMundo", 1},
-		{"Exit case variants", "Linea1\nExiT", 1},
+		{"Single line", "Hello world\nexit", 1},
+		{"Multiple lines no breaks", "Line1\nLine2\nexit", 2},
+		{"Multiple lines with breaks", "Line1\n\nLine2\nexit", 3},
+		{"Exit at start", "exit\nHello", 0},
+		{"Exit in middle", "Hello\nexit\nWorld", 1},
+		{"Exit case variants", "Line1\nExiT", 1},
 	}
 
 	for _, tc := range lineTests {
@@ -50,7 +50,7 @@ func TestWordCounter(t *testing.T) {
 			reader := strings.NewReader(tc.input)
 			result := CountLogic(reader, true)
 			if result != tc.expected {
-				t.Errorf("Operation failed [%s]: Expected %d lines, but got %d", tc.name, tc.expected, result)
+				t.Errorf("Test [%s] failed: Expected %d lines, but got %d", tc.name, tc.expected, result)
 			}
 		})
 	}
