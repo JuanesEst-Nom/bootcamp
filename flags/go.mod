@@ -1,3 +1,3 @@
-module flags-counte
+module flags
 
 go 1.24.4

@@ -2,31 +2,29 @@ package fl
 
 import "os"
 
-// Flag define la estructura para nuestras banderas booleanas
 type Flag struct {
-	value       *bool
-	description string
+	Value       *bool
+	Description string
 }
 
 var flags = make(map[string]*Flag)
 
-func Bool(cmd string, defaultValue bool, description string) *bool {
+func Bool(name string, defaultValue bool, description string) *bool {
 	v := defaultValue
-
-	flags[cmd] = &Flag{
-		value:       &v,
-		description: description,
+	f := &Flag{
+		Value:       &v,
+		Description: description,
 	}
-	return &v
+	flags[name] = f
+	return f.Value
 }
 
-// Parse recorre os.Args y actualiza los valores de las banderas encontradas
 func Parse() {
 	args := os.Args[1:]
 
 	for _, arg := range args {
 		if f, exists := flags[arg]; exists {
-			*f.value = true
+			*f.Value = true
 		}
 	}
 }
