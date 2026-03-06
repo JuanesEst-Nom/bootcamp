@@ -1,17 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"os"
 	"os/exec"
 )
 
 func main() {
 	cmd := exec.Command("ls", "-lah")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("Captured output:\n%s", out)
 }
