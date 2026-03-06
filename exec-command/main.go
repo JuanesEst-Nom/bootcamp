@@ -3,18 +3,14 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"os/exec"
 )
 
 func main() {
-	cmd := exec.Command("ls", "-lah")
-	var b bytes.Buffer
-	cmd.Stdout = &b
-	cmd.Stderr = &b
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Manual buffer output:\n%s", b.Bytes())
+	cmd := exec.Command("ls", "-lah", "non-existent-file")
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	_ = cmd.Run()
+	fmt.Printf("Stdout: %s\nStderr: %s\n", outb.String(), errb.String())
 }
