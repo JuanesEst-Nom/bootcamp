@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os/exec"
@@ -8,9 +9,12 @@ import (
 
 func main() {
 	cmd := exec.Command("ls", "-lah")
-	out, err := cmd.CombinedOutput()
+	var b bytes.Buffer
+	cmd.Stdout = &b
+	cmd.Stderr = &b
+	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Captured output:\n%s", out)
+	fmt.Printf("Manual buffer output:\n%s", b.Bytes())
 }
