@@ -1,7 +1,9 @@
 package todo
 
 import (
+	"encoding/json"
 	"errors"
+	"os"
 	"time"
 )
 
@@ -46,4 +48,29 @@ func (l *List) Delete(i int) error {
 
 	*l = append(ls[:i], ls[i+1:]...)
 	return nil
+}
+
+func (l *List) Save(filename string) error {
+
+	data, err := json.MarshalIndent(l, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(filename, data, 0644)
+}
+
+func (l *List) Get(filename string) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+	if len(data) == 0 {
+		return nil
+	}
+
+	return json.Unmarshal(data, l)
 }
