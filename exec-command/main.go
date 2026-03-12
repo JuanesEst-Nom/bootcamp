@@ -33,5 +33,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("\n--- Final Summary (from buffer) ---\nSize: %d bytes\n", stdoutWriter.buf.Len())
+	fmt.Printf("Final summary\nSize: %d bytes\n", stdoutWriter.buf.Len())
 }
