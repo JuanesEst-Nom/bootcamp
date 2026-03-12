@@ -48,7 +48,7 @@ func TestCountLogic(t *testing.T) {
 	for _, tc := range wordTests {
 		t.Run(tc.name, func(t *testing.T) {
 			reader := strings.NewReader(tc.input)
-			result := CountLogic(reader, false)
+			result := CountLogic(reader, false, false)
 			if result != tc.expected {
 				t.Errorf("Test [%s] failed: Expected %d words, but got %d", tc.name, tc.expected, result)
 			}
@@ -96,9 +96,52 @@ func TestCountLogic(t *testing.T) {
 	for _, tc := range lineTests {
 		t.Run(tc.name, func(t *testing.T) {
 			reader := strings.NewReader(tc.input)
-			result := CountLogic(reader, true)
+			result := CountLogic(reader, true, false)
 			if result != tc.expected {
 				t.Errorf("Test [%s] failed: Expected %d lines, but got %d", tc.name, tc.expected, result)
+			}
+		})
+	}
+
+	// Test cases for byte counting
+	byteTests := []struct {
+		name     string
+		input    string
+		expected int
+	}{
+		{
+			name:     "Single word",
+			input:    "Hello",
+			expected: 5,
+		},
+		{
+			name:     "Word with newline",
+			input:    "Hello\n",
+			expected: 6,
+		},
+		{
+			name:     "Multiple words",
+			input:    "Hello world",
+			expected: 11,
+		},
+		{
+			name:     "Exit is not treated as stop signal",
+			input:    "exit",
+			expected: 4,
+		},
+		{
+			name:     "Empty input",
+			input:    "",
+			expected: 0,
+		},
+	}
+
+	for _, tc := range byteTests {
+		t.Run(tc.name, func(t *testing.T) {
+			reader := strings.NewReader(tc.input)
+			result := CountLogic(reader, false, true)
+			if result != tc.expected {
+				t.Errorf("Test [%s] failed: Expected %d bytes, but got %d", tc.name, tc.expected, result)
 			}
 		})
 	}
