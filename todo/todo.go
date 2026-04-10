@@ -52,7 +52,7 @@ func (l *List) Delete(i int) error {
 
 func (l *List) Save(filename string) error {
 
-	data, err := json.MarshalIndent(l, "", "  ")
+	data, err := json.Marshal(l)
 	if err != nil {
 		return err
 	}
