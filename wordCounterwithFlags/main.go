@@ -13,7 +13,7 @@ func CountLogic(input io.Reader, countLines bool, countBytes bool) int {
 	scanner := bufio.NewScanner(input)
 	count := 0
 
-	if countBytes {
+	if countBytes && !countLines {
 		scanner.Split(bufio.ScanBytes)
 		for scanner.Scan() {
 			count++

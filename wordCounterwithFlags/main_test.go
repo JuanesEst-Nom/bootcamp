@@ -145,4 +145,37 @@ func TestCountLogic(t *testing.T) {
 			}
 		})
 	}
+
+	// Test cases for both -l and -b flags (should count lines)
+	bothFlagsTests := []struct {
+		name     string
+		input    string
+		expected int
+	}{
+		{
+			name:     "Both flags: single line",
+			input:    "Hello world\nexit",
+			expected: 1,
+		},
+		{
+			name:     "Both flags: multiple lines",
+			input:    "Line1\nLine2\nLine3\nexit",
+			expected: 3,
+		},
+		{
+			name:     "Both flags: exit stops counting",
+			input:    "Hello\nexit\nWorld",
+			expected: 1,
+		},
+	}
+
+	for _, tc := range bothFlagsTests {
+		t.Run(tc.name, func(t *testing.T) {
+			reader := strings.NewReader(tc.input)
+			result := CountLogic(reader, true, true)
+			if result != tc.expected {
+				t.Errorf("Test [%s] failed: Expected %d lines, but got %d", tc.name, tc.expected, result)
+			}
+		})
+	}
 }
