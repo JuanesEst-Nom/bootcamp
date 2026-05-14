@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
-	"path/filepath"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday/v2"
@@ -30,7 +30,7 @@ func parseContent(input []byte) []byte {
 	return append([]byte(header), append(body, []byte(footer)...)...)
 }
 
-func run(in, out string) error {
+func run(in, out string, writer io.Writer) error {
 	if in == "" {
 		return fmt.Errorf("input file is required")
 	}
@@ -40,11 +40,16 @@ func run(in, out string) error {
 		return fmt.Errorf("failed to read input file: %v", err)
 	}
 
-	outFile := out
-	if outFile == "" {
-		outFile = filepath.Base(in) + ".html"
+	var outFile string
+	if out != "" {
+		outFile = out + ".html"
 	} else {
-		outFile = outFile + ".html"
+		tf, err := os.CreateTemp(".", "md*.html")
+		if err != nil {
+			return fmt.Errorf("failed to create temp file: %v", err)
+		}
+		tf.Close()
+		outFile = tf.Name()
 	}
 
 	data := parseContent(input)
@@ -53,6 +58,7 @@ func run(in, out string) error {
 		return fmt.Errorf("failed to save HTML: %v", err)
 	}
 
+	fmt.Fprintln(writer, outFile)
 	return nil
 }
 
@@ -69,7 +75,7 @@ func main() {
 	out := flag.String("out", "", "Name of the output HTML file (optional)")
 	flag.Parse()
 
-	if err := run(*in, *out); err != nil {
+	if err := run(*in, *out, os.Stdout); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
