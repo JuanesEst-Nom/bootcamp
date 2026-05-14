@@ -4,6 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
+
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday/v2"
 )
 
 const header = `<!DOCTYPE html>
@@ -20,18 +24,32 @@ const footer = `
   </html>
 `
 
-func run(name string) error {
+func parseContent(input []byte) []byte {
+	output := blackfriday.Run(input)
+	body := bluemonday.UGCPolicy().SanitizeBytes(output)
+	return append([]byte(header), append(body, []byte(footer)...)...)
+}
 
-	if name == "" {
-		return fmt.Errorf("output file name is required")
+func run(in, out string) error {
+	if in == "" {
+		return fmt.Errorf("input file is required")
 	}
 
-	ext := name + ".html"
+	input, err := os.ReadFile(in)
+	if err != nil {
+		return fmt.Errorf("failed to read input file: %v", err)
+	}
 
-	body := header + footer
-	data := []byte(body)
+	outFile := out
+	if outFile == "" {
+		outFile = filepath.Base(in) + ".html"
+	} else {
+		outFile = outFile + ".html"
+	}
 
-	if err := saveHTML(data, ext); err != nil {
+	data := parseContent(input)
+
+	if err := saveHTML(data, outFile); err != nil {
 		return fmt.Errorf("failed to save HTML: %v", err)
 	}
 
@@ -39,7 +57,6 @@ func run(name string) error {
 }
 
 func saveHTML(data []byte, nameFile string) error {
-
 	err := os.WriteFile(nameFile, data, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write file: %v", err)
@@ -48,11 +65,11 @@ func saveHTML(data []byte, nameFile string) error {
 }
 
 func main() {
-
-	name := flag.String("out", "", "Name of the output HTML file")
+	in := flag.String("in", "", "Path to the input markdown file")
+	out := flag.String("out", "", "Name of the output HTML file (optional)")
 	flag.Parse()
 
-	if err := run(*name); err != nil {
+	if err := run(*in, *out); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
