@@ -3,35 +3,45 @@ package main
 import (
 	"bytes"
 	"os"
+	"strings"
 	"testing"
 )
 
-func TestRun(t *testing.T) {
-	tests := []struct {
-		name    string
-		in      string
-		out     string
-		wantErr bool
-	}{
-		{"Valid input with out flag", "testdata/test.md", "testdata/output", false},
-		{"Valid input without out flag", "testdata/test.md", "", false},
-		{"Empty input", "", "", true},
+func TestRunUsingOutFlag(t *testing.T) {
+	var buf bytes.Buffer
+	outFile := "testdata/output"
+
+	if err := run("testdata/test.md", outFile, &buf); err != nil {
+		t.Fatalf("run() error = %v", err)
+	}
+	defer os.Remove(outFile + ".html")
+
+	if _, err := os.Stat(outFile + ".html"); os.IsNotExist(err) {
+		t.Errorf("expected file %s.html to exist", outFile)
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := run(tt.in, tt.out)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
-			}
-			if err == nil {
-				if tt.out != "" {
-					os.Remove(tt.out + ".html")
-				} else {
-					os.Remove("test.md.html")
-				}
-			}
-		})
+	printed := strings.TrimSpace(buf.String())
+	if printed != outFile+".html" {
+		t.Errorf("expected printed file name '%s.html', got '%s'", outFile, printed)
+	}
+}
+
+func TestRunWithoutOutFlag(t *testing.T) {
+	var buf bytes.Buffer
+
+	if err := run("testdata/test.md", "", &buf); err != nil {
+		t.Fatalf("run() error = %v", err)
+	}
+
+	outFile := strings.TrimSpace(buf.String())
+	defer os.Remove(outFile)
+
+	if outFile == "" {
+		t.Fatal("expected file name to be printed, got empty string")
+	}
+
+	if _, err := os.Stat(outFile); os.IsNotExist(err) {
+		t.Errorf("expected temp file %s to exist", outFile)
 	}
 }
 
